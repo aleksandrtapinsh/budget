@@ -1,19 +1,24 @@
 import mongoose from 'mongoose';
 
-// TODO: define categorySchema with fields:
-//   name          – String, required, lowercase
-//   plannedAmount – Number, required, min: 0
-
 const categorySchema = new mongoose.Schema({
   name: { type: String, required: true, lowercase: true },
   plannedAmount: { type: Number, required: true, min: 0 },
 });
+
+const incomeSchema = new mongoose.Schema({
+  payType: { type: String, enum: ['hourly', 'salary'], required: true },
+  schedule: { type: String, enum: ['fullTime', 'partTime'], required: true },
+  rate: { type: Number, required: true, min: 0 },
+  hoursPerWeek: { type: Number, min: 1, max: 168 },
+  monthlyIncome: { type: Number, required: true, min: 0 },
+}, { _id: false });
 
 const budgetSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   name: { type: String, required: true },
   month: { type: Number, required: true, min: 1, max: 12 },
   year: { type: Number, required: true },
+  income: incomeSchema,
   categories: [categorySchema],
   createdAt: { type: Date, default: Date.now },
 });

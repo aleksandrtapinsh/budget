@@ -12,10 +12,10 @@ export const getBudgets = async (req, res) => {
 
 export const createBudget = async (req, res) => {
   try {
-    const { name, month, year, categories } = req.body;
+    const { name, month, year, categories, income } = req.body;
     const existing = await Budget.findOne({ userId: req.user.id, month, year });
     if (existing) return res.status(409).json({ message: 'A budget for that month already exists' });
-    const budget = await Budget.create({ userId: req.user.id, name, month, year, categories });
+    const budget = await Budget.create({ userId: req.user.id, name, month, year, categories, income });
     res.status(201).json(budget);
   } catch (err) {
     if (err.name === 'ValidationError') return res.status(400).json({ message: err.message });
@@ -30,6 +30,7 @@ export const updateBudget = async (req, res) => {
     if (budget.userId.toString() !== req.user.id) return res.status(403).json({ message: 'Forbidden' });
     if (req.body.name !== undefined) budget.name = req.body.name;
     if (req.body.categories !== undefined) budget.categories = req.body.categories;
+    if (req.body.income !== undefined) budget.income = req.body.income;
     await budget.save();
     res.status(200).json(budget);
   } catch (err) {
