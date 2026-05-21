@@ -1,27 +1,26 @@
-// Props:
-//   transactions  – array of transaction objects
-//   onEdit        – (transaction) => void
-//   onDelete      – (id) => void
+const fmt = (n) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 
 export default function TransactionList({ transactions, onEdit, onDelete }) {
   if (!transactions.length) {
-    return <p>No transactions yet.</p>;
+    return <p className="text-sm text-gray-400 py-8 text-center">No transactions yet.</p>;
   }
 
-  const fmt = (n) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-
   return (
-    <ul style={{ listStyle: 'none', padding: 0 }}>
+    <ul className="divide-y divide-gray-100">
       {transactions.map((tx) => (
-        <li key={tx._id} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.6rem 0', borderBottom: '1px solid #e5e7eb' }}>
-          <span style={{ color: '#6b7280', fontSize: 13, minWidth: 90 }}>{new Date(tx.date).toLocaleDateString()}</span>
-          <span style={{ textTransform: 'capitalize', fontSize: 12, background: tx.type === 'income' ? '#dcfce7' : '#fee2e2', color: tx.type === 'income' ? '#16a34a' : '#dc2626', padding: '1px 6px', borderRadius: 99 }}>{tx.type}</span>
-          <span style={{ textTransform: 'capitalize', flex: 1 }}>{tx.category}{tx.description ? ` — ${tx.description}` : ''}</span>
-          <span style={{ fontWeight: 600, color: tx.type === 'income' ? '#16a34a' : '#dc2626' }}>
+        <li key={tx._id} className="flex items-center gap-4 py-3">
+          <span className="text-xs text-gray-400 w-24 shrink-0">{new Date(tx.date).toLocaleDateString()}</span>
+          <span className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${tx.type === 'income' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
+            {tx.type}
+          </span>
+          <span className="text-sm text-gray-700 capitalize flex-1 truncate">
+            {tx.category}{tx.description ? ` — ${tx.description}` : ''}
+          </span>
+          <span className={`text-sm font-semibold shrink-0 ${tx.type === 'income' ? 'text-green-600' : 'text-red-500'}`}>
             {tx.type === 'income' ? '+' : '-'}{fmt(tx.amount)}
           </span>
-          <button onClick={() => onEdit(tx)}>Edit</button>
-          <button onClick={() => onDelete(tx._id)}>Delete</button>
+          <button onClick={() => onEdit(tx)} className="text-xs text-gray-400 hover:text-indigo-600">Edit</button>
+          <button onClick={() => onDelete(tx._id)} className="text-xs text-gray-400 hover:text-red-500">Delete</button>
         </li>
       ))}
     </ul>

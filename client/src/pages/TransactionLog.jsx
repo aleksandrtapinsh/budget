@@ -18,13 +18,8 @@ export default function TransactionLog() {
   const [editing, setEditing] = useState(null);
   const [showForm, setShowForm] = useState(false);
 
-  useEffect(() => {
-    fetchBudgets();
-  }, []);
-
-  useEffect(() => {
-    getTransactions(filters).then(setTransactions);
-  }, [filters]);
+  useEffect(() => { fetchBudgets(); }, []);
+  useEffect(() => { getTransactions(filters).then(setTransactions); }, [filters]);
 
   const handleCreate = async (data) => {
     const created = await createTransaction(data);
@@ -46,12 +41,17 @@ export default function TransactionLog() {
   };
 
   return (
-    <>
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <main style={{ maxWidth: 800, margin: '2rem auto', padding: '0 1rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h1>Transactions</h1>
-          <button onClick={() => { setEditing(null); setShowForm(true); }}>+ Add Transaction</button>
+      <main className="max-w-3xl mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">Transactions</h1>
+          <button
+            onClick={() => { setEditing(null); setShowForm(true); }}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+          >
+            + Add Transaction
+          </button>
         </div>
 
         {showForm && (
@@ -63,18 +63,16 @@ export default function TransactionLog() {
           />
         )}
 
-        <TransactionFilter
-          filters={filters}
-          budgets={budgets}
-          onChange={setFilters}
-        />
+        <TransactionFilter filters={filters} budgets={budgets} onChange={setFilters} />
 
-        <TransactionList
-          transactions={transactions}
-          onEdit={(tx) => { setEditing(tx); setShowForm(true); }}
-          onDelete={handleDelete}
-        />
+        <div className="bg-white border border-gray-200 rounded-2xl px-5">
+          <TransactionList
+            transactions={transactions}
+            onEdit={(tx) => { setEditing(tx); setShowForm(true); }}
+            onDelete={handleDelete}
+          />
+        </div>
       </main>
-    </>
+    </div>
   );
 }

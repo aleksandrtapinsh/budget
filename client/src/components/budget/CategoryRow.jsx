@@ -1,29 +1,22 @@
-// Renders a single category's planned vs. actual spending as a progress bar row.
-// Props:
-//   category      – String
-//   plannedAmount – Number
-//   totalSpent    – Number
-//   remaining     – Number
-//   percentUsed   – Number
-
 const fmt = (n) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 
 export default function CategoryRow({ category, plannedAmount, totalSpent, remaining, percentUsed }) {
-  const barColor = percentUsed >= 100 ? '#dc2626' : percentUsed >= 75 ? '#d97706' : '#16a34a';
   const clamped = Math.min(percentUsed, 100);
+  const barColor = percentUsed >= 100 ? 'bg-red-500' : percentUsed >= 75 ? 'bg-yellow-500' : 'bg-green-500';
+  const overBudget = remaining < 0;
 
   return (
-    <div style={{ marginBottom: '1rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-        <span style={{ textTransform: 'capitalize', fontWeight: 500 }}>{category}</span>
-        <span style={{ fontSize: 13, color: '#6b7280' }}>{fmt(totalSpent)} / {fmt(plannedAmount)}</span>
+    <div className="mb-4">
+      <div className="flex justify-between items-center mb-1">
+        <span className="text-sm font-medium text-gray-700 capitalize">{category}</span>
+        <span className="text-sm text-gray-500">{fmt(totalSpent)} / {fmt(plannedAmount)}</span>
       </div>
-      <div style={{ height: 8, background: '#e5e7eb', borderRadius: 99, overflow: 'hidden' }}>
-        <div style={{ height: '100%', width: `${clamped}%`, background: barColor, borderRadius: 99 }} />
+      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+        <div className={`h-full rounded-full ${barColor}`} style={{ width: `${clamped}%` }} />
       </div>
-      <div style={{ fontSize: 12, marginTop: 2, color: remaining < 0 ? '#dc2626' : '#6b7280' }}>
-        {remaining < 0 ? `Over by ${fmt(Math.abs(remaining))}` : `${fmt(remaining)} remaining`}
-      </div>
+      <p className={`text-xs mt-1 ${overBudget ? 'text-red-500' : 'text-gray-400'}`}>
+        {overBudget ? `Over by ${fmt(Math.abs(remaining))}` : `${fmt(remaining)} remaining`}
+      </p>
     </div>
   );
 }

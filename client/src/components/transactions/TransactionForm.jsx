@@ -1,11 +1,5 @@
 import { useState } from 'react';
 
-// Props:
-//   initialData  – transaction object to prefill (null for create)
-//   budgets      – array of budget options for the dropdown
-//   onSubmit     – async (data) => void
-//   onCancel     – () => void
-
 export default function TransactionForm({ initialData, budgets, onSubmit, onCancel }) {
   const [budgetId, setBudgetId] = useState(initialData?.budgetId ?? '');
   const [category, setCategory] = useState(initialData?.category ?? '');
@@ -19,25 +13,37 @@ export default function TransactionForm({ initialData, budgets, onSubmit, onCanc
     await onSubmit({ budgetId, category, amount: Number(amount), date, description, type });
   };
 
+  const inputCls = 'border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full';
+
   return (
-    <form onSubmit={handleSubmit} style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '1rem', margin: '1rem 0', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-      <select value={budgetId} onChange={(e) => setBudgetId(e.target.value)} required>
+    <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl p-6 my-4 flex flex-col gap-3">
+      <select value={budgetId} onChange={(e) => setBudgetId(e.target.value)} required className={inputCls}>
         <option value="">Select budget…</option>
-        {budgets.map((b) => (
-          <option key={b._id} value={b._id}>{b.name}</option>
-        ))}
+        {budgets.map((b) => <option key={b._id} value={b._id}>{b.name}</option>)}
       </select>
-      <input placeholder="Category" value={category} onChange={(e) => setCategory(e.target.value)} required />
-      <input type="number" placeholder="Amount" value={amount} onChange={(e) => setAmount(e.target.value)} min={0} step="0.01" required />
-      <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
-      <input placeholder="Description (optional)" value={description} onChange={(e) => setDescription(e.target.value)} />
-      <div style={{ display: 'flex', gap: '1rem' }}>
-        <label><input type="radio" value="expense" checked={type === 'expense'} onChange={() => setType('expense')} /> Expense</label>
-        <label><input type="radio" value="income" checked={type === 'income'} onChange={() => setType('income')} /> Income</label>
+      <div className="flex gap-3">
+        <input placeholder="Category" value={category} onChange={(e) => setCategory(e.target.value)} required className={inputCls} />
+        <input type="number" placeholder="Amount" value={amount} onChange={(e) => setAmount(e.target.value)} min={0} step="0.01" required className={inputCls} />
       </div>
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <button type="submit">{initialData ? 'Save' : 'Add Transaction'}</button>
-        <button type="button" onClick={onCancel}>Cancel</button>
+      <div className="flex gap-3">
+        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required className={inputCls} />
+        <input placeholder="Description (optional)" value={description} onChange={(e) => setDescription(e.target.value)} className={inputCls} />
+      </div>
+      <div className="flex gap-4">
+        {['expense', 'income'].map((t) => (
+          <label key={t} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+            <input type="radio" value={t} checked={type === t} onChange={() => setType(t)} className="accent-indigo-600" />
+            <span className="capitalize">{t}</span>
+          </label>
+        ))}
+      </div>
+      <div className="flex gap-2">
+        <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+          {initialData ? 'Save' : 'Add Transaction'}
+        </button>
+        <button type="button" onClick={onCancel} className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm">
+          Cancel
+        </button>
       </div>
     </form>
   );

@@ -11,15 +11,20 @@ export default function Navbar() {
   };
 
   return (
-    <nav style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.75rem 1.5rem', borderBottom: '1px solid #e5e7eb' }}>
-      <span style={{ fontWeight: 700, fontSize: '1.1rem', marginRight: 'auto' }}>BudgetApp</span>
-      <Link to="/dashboard">Dashboard</Link>
-      <Link to="/planner">Planner</Link>
-      <Link to="/transactions">Transactions</Link>
+    <nav className="bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-6">
+      <span className="font-bold text-lg text-indigo-600 mr-auto">BudgetApp</span>
+      <Link to="/dashboard" className="text-sm text-gray-600 hover:text-indigo-600">Dashboard</Link>
+      <Link to="/planner" className="text-sm text-gray-600 hover:text-indigo-600">Planner</Link>
+      <Link to="/transactions" className="text-sm text-gray-600 hover:text-indigo-600">Transactions</Link>
       {user && (
         <>
-          <span style={{ color: '#6b7280' }}>{user.name}</span>
-          <button onClick={handleLogout}>Logout</button>
+          <span className="text-sm text-gray-500">{user.name}</span>
+          <button
+            onClick={handleLogout}
+            className="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-md"
+          >
+            Logout
+          </button>
         </>
       )}
     </nav>
