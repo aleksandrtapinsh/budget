@@ -16,31 +16,60 @@ function parseLine(line) {
   return fields;
 }
 
+function parseAmount(raw) {
+  return parseFloat(raw.replace(/[$, ]/g, ''));
+}
+
 function parseTransactionCSV(text) {
   const lines = text.trim().split('\n').filter(l => l.trim());
   if (lines.length < 2) throw new Error('Empty CSV');
 
-  const headers = parseLine(lines[0]).map(h => h.toLowerCase());
+  const headers = parseLine(lines[0]).map(h => h.toLowerCase().trim());
   const idx = {
-    date: headers.findIndex(h => h === 'date'),
-    desc: headers.findIndex(h => h === 'description'),
-    amt:  headers.findIndex(h => h === 'amount'),
+    date:   headers.findIndex(h => h === 'date'),
+    desc:   headers.findIndex(h => ['description', 'memo', 'name', 'transaction', 'details'].includes(h)),
+    amt:    headers.findIndex(h => h === 'amount'),
+    debit:  headers.findIndex(h => ['debit', 'debit amount', 'withdrawal', 'withdrawals'].includes(h)),
+    credit: headers.findIndex(h => ['credit', 'credit amount', 'deposit', 'deposits'].includes(h)),
+    type:   headers.findIndex(h => ['type', 'transaction type', 'credit/debit', 'debit/credit', 'dr/cr'].includes(h)),
   };
-  if (idx.date === -1 || idx.amt === -1) throw new Error('Missing required columns (Date, Amount)');
+  if (idx.date === -1) throw new Error('Missing required column: Date');
+  const hasSplitCols = idx.debit !== -1 && idx.credit !== -1;
+  if (!hasSplitCols && idx.amt === -1) throw new Error('Missing required column: Amount (or Debit/Credit columns)');
 
   return lines.slice(1).flatMap(line => {
     const f = parseLine(line);
-    const amtRaw = f[idx.amt] ?? '';
-    const amtClean = amtRaw.replace(/[$,]/g, '');
-    const amount = Math.abs(parseFloat(amtClean));
-    if (isNaN(amount) || amount === 0) return [];
 
     const [month, day, year] = (f[idx.date] ?? '').split('/');
     const date = `${year}-${month?.padStart(2,'0')}-${day?.padStart(2,'0')}`;
     if (!date || date === 'undefined-undefined-undefined') return [];
 
-    const description = (f[idx.desc] ?? '').trim();
-    const type = amtClean.startsWith('-') ? 'expense' : 'income';
+    const description = idx.desc !== -1 ? (f[idx.desc] ?? '').trim() : '';
+
+    let amount, type;
+
+    if (hasSplitCols) {
+      const debitVal  = parseAmount(f[idx.debit]  ?? '');
+      const creditVal = parseAmount(f[idx.credit] ?? '');
+      const isDebit   = !isNaN(debitVal)  && debitVal  > 0;
+      const isCredit  = !isNaN(creditVal) && creditVal > 0;
+      if (!isDebit && !isCredit) return [];
+      amount = isDebit ? debitVal : creditVal;
+      type   = isCredit ? 'income' : 'expense';
+    } else {
+      const amtRaw   = f[idx.amt] ?? '';
+      const amtClean = amtRaw.replace(/[$, ]/g, '');
+      amount = Math.abs(parseFloat(amtClean));
+      if (isNaN(amount) || amount === 0) return [];
+
+      if (idx.type !== -1) {
+        const tv = (f[idx.type] ?? '').toLowerCase().trim();
+        type = (tv === 'credit' || tv === 'income' || tv === 'deposit' || tv === 'cr') ? 'income' : 'expense';
+      } else {
+        type = amtClean.startsWith('-') ? 'expense' : 'income';
+      }
+    }
+
     return [{ date, description, amount, type }];
   });
 }
@@ -100,7 +129,7 @@ export default function CsvImportModal({ budgets, onClose, onImport }) {
   const categoryNames    = selectedBudget?.categories.map(c => c.name) ?? [];
   const includedRows     = rows.filter(r => r.include);
   const allChecked       = rows.length > 0 && rows.every(r => r.include);
-  const missingCategory  = includedRows.some(r => !r.category);
+  const missingCategory  = includedRows.some(r => r.type === 'expense' && !r.category);
 
   // Auto-suggest when budget changes
   useEffect(() => {
@@ -114,7 +143,7 @@ export default function CsvImportModal({ budgets, onClose, onImport }) {
   // Apply bulk category
   useEffect(() => {
     if (!bulkCat) return;
-    setRows(prev => prev.map(r => r.include ? { ...r, category: bulkCat } : r));
+    setRows(prev => prev.map(r => (r.include && r.type === 'expense') ? { ...r, category: bulkCat } : r));
     setBulkCat('');
   }, [bulkCat]);
 
@@ -147,6 +176,14 @@ export default function CsvImportModal({ budgets, onClose, onImport }) {
     setRows(prev => prev.map(r => ({ ...r, include: !allChecked })));
   }
 
+  function toggleRowType(id) {
+    setRows(prev => prev.map(r => {
+      if (r.id !== id) return r;
+      const newType = r.type === 'expense' ? 'income' : 'expense';
+      return { ...r, type: newType, category: newType === 'income' ? '' : r.category };
+    }));
+  }
+
   async function handleImport() {
     if (!budgetId) { setError('Please select a budget.'); return; }
     if (missingCategory) { setError('All included transactions need a category.'); return; }
@@ -155,7 +192,7 @@ export default function CsvImportModal({ budgets, onClose, onImport }) {
     try {
       await onImport(includedRows.map(r => ({
         budgetId,
-        category: r.category,
+        category: r.type === 'income' ? (r.category || 'income') : r.category,
         amount: r.amount,
         date: r.date,
         description: r.description,
@@ -200,7 +237,7 @@ export default function CsvImportModal({ budgets, onClose, onImport }) {
           </div>
 
           <p className="text-xs text-gray-600 mt-4 text-center">
-            Expects columns: Date, Description, Amount
+            Columns: Date, Description, Amount — or Debit/Credit split columns
           </p>
 
           <button onClick={onClose} className="mt-4 w-full bg-gray-700 hover:bg-gray-600 text-gray-300 py-2.5 rounded-xl text-sm font-medium">
@@ -220,7 +257,13 @@ export default function CsvImportModal({ budgets, onClose, onImport }) {
           <div className="flex justify-between items-start mb-4">
             <div>
               <h2 className="text-xl font-bold text-gray-100">Review Transactions</h2>
-              <p className="text-sm text-gray-500">{rows.length} transactions found · {includedRows.length} selected</p>
+              <p className="text-sm text-gray-500">
+                {rows.length} found · {includedRows.length} selected
+                {includedRows.some(r => r.type === 'income') && (
+                  <span className="ml-2 text-emerald-500">{includedRows.filter(r => r.type === 'income').length} income</span>
+                )}
+                <span className="ml-2 text-gray-600 text-xs">· click amount to toggle type</span>
+              </p>
             </div>
             <button onClick={onClose} className="text-gray-500 hover:text-gray-300 text-2xl leading-none">×</button>
           </div>
@@ -255,7 +298,7 @@ export default function CsvImportModal({ budgets, onClose, onImport }) {
         {/* Scrollable list */}
         <div className="flex-1 overflow-y-auto px-6 py-2">
           {rows.map((row) => {
-            const missing = row.include && !row.category;
+            const missing = row.include && row.type === 'expense' && !row.category;
             return (
               <div
                 key={row.id}
@@ -271,18 +314,29 @@ export default function CsvImportModal({ budgets, onClose, onImport }) {
                 <span className="text-sm text-gray-300 flex-1 min-w-0 truncate" title={row.description}>
                   {row.description}
                 </span>
-                <span className={`text-sm font-semibold flex-shrink-0 w-20 text-right ${row.type === 'income' ? 'text-emerald-400' : 'text-red-400'}`}>
-                  {row.type === 'income' ? '+' : '-'}{fmt(row.amount)}
-                </span>
-                <select
-                  value={row.category}
-                  onChange={(e) => setRowCategory(row.id, e.target.value)}
-                  disabled={!row.include || !budgetId}
-                  className={`text-sm rounded-lg px-2 py-1.5 flex-shrink-0 w-36 focus:outline-none focus:ring-2 focus:ring-emerald-500 border ${missing ? 'bg-red-900/30 border-red-700 text-red-300' : 'bg-gray-700 border-gray-600 text-gray-100'}`}
+                <button
+                  type="button"
+                  onClick={() => row.include && toggleRowType(row.id)}
+                  title="Click to toggle income / expense"
+                  className={`text-sm font-semibold flex-shrink-0 w-20 text-right rounded px-1 transition-opacity ${row.include ? 'cursor-pointer hover:opacity-70' : 'cursor-default'} ${row.type === 'income' ? 'text-emerald-400' : 'text-red-400'}`}
                 >
-                  <option value="">Category…</option>
-                  {categoryNames.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
-                </select>
+                  {row.type === 'income' ? '+' : '-'}{fmt(row.amount)}
+                </button>
+                {row.type === 'income' ? (
+                  <span className="text-xs text-emerald-400 bg-emerald-900/30 border border-emerald-700 rounded-lg px-2 py-1.5 flex-shrink-0 w-36 text-center">
+                    Income
+                  </span>
+                ) : (
+                  <select
+                    value={row.category}
+                    onChange={(e) => setRowCategory(row.id, e.target.value)}
+                    disabled={!row.include || !budgetId}
+                    className={`text-sm rounded-lg px-2 py-1.5 flex-shrink-0 w-36 focus:outline-none focus:ring-2 focus:ring-emerald-500 border ${missing ? 'bg-red-900/30 border-red-700 text-red-300' : 'bg-gray-700 border-gray-600 text-gray-100'}`}
+                  >
+                    <option value="">Category…</option>
+                    {categoryNames.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
+                  </select>
+                )}
               </div>
             );
           })}
