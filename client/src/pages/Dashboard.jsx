@@ -87,7 +87,7 @@ export default function Dashboard() {
                 <h2 className="text-base font-semibold text-gray-800 mb-5">Category Breakdown</h2>
                 <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
                   <div className="flex-shrink-0 flex flex-col items-center gap-1">
-                    <PieChart slices={pieSlices} size={180} holeRatio={0.5} />
+                    <PieChart slices={pieSlices} total={activeBudget?.income?.monthlyIncome} size={180} holeRatio={0.5} />
                     {totalSpent > 0 ? (
                       <p className="text-sm font-semibold text-gray-700">{fmt(totalSpent)} spent</p>
                     ) : (

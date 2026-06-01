@@ -41,7 +41,7 @@ export default function BudgetCard({ budget, summary, onSelect, onDelete }) {
         </button>
       </div>
       <div className="flex justify-center mb-2">
-        <PieChart slices={slices} size={64} holeRatio={0.38} />
+        <PieChart slices={slices} total={budget.income?.monthlyIncome} size={64} holeRatio={0.38} />
       </div>
       <div className="flex justify-between text-xs text-gray-400">
         <span>{fmt(totalSpent)} spent</span>
