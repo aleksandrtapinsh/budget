@@ -33,9 +33,12 @@ export default function Dashboard() {
   });
 
   const totalSpent = summaryWithColors.reduce((s, r) => s + r.totalSpent, 0);
-  const spentSlices = summaryWithColors
-    .filter((r) => r.totalSpent > 0)
-    .map((r) => ({ value: r.totalSpent, color: r.color, label: r.category }));
+  const pieSlices = summaryWithColors.map((r) => ({
+    label: r.category,
+    plannedValue: r.plannedAmount,
+    spentValue: r.totalSpent,
+    color: r.color,
+  }));
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -84,7 +87,7 @@ export default function Dashboard() {
                 <h2 className="text-base font-semibold text-gray-800 mb-5">Category Breakdown</h2>
                 <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
                   <div className="flex-shrink-0 flex flex-col items-center gap-1">
-                    <PieChart slices={spentSlices} size={180} holeRatio={0.5} />
+                    <PieChart slices={pieSlices} size={180} holeRatio={0.5} />
                     {totalSpent > 0 ? (
                       <p className="text-sm font-semibold text-gray-700">{fmt(totalSpent)} spent</p>
                     ) : (

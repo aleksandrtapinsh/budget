@@ -12,11 +12,15 @@ export default function BudgetCard({ budget, summary, onSelect, onDelete }) {
   const totalPlanned = budget.categories.reduce((sum, cat) => sum + cat.plannedAmount, 0);
   const totalSpent = summary.reduce((sum, cat) => sum + cat.totalSpent, 0);
 
-  const slices = budget.categories.map((cat, i) => ({
-    value: cat.plannedAmount,
-    color: cat.color ?? DEFAULT_COLORS[i % DEFAULT_COLORS.length],
-    label: cat.name,
-  }));
+  const slices = budget.categories.map((cat, i) => {
+    const row = summary.find((s) => s.category === cat.name);
+    return {
+      label: cat.name,
+      plannedValue: cat.plannedAmount,
+      spentValue: row?.totalSpent ?? 0,
+      color: cat.color ?? DEFAULT_COLORS[i % DEFAULT_COLORS.length],
+    };
+  });
 
   return (
     <div
