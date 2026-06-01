@@ -12,7 +12,7 @@ export default function Navbar() {
 
   return (
     <nav className="bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-6">
-      <span className="font-bold text-lg text-indigo-600 mr-auto">BudgetApp</span>
+      <span className="font-bold text-lg text-indigo-600 mr-auto">Bad Budget</span>
       <Link to="/calendar" className="text-sm text-gray-600 hover:text-indigo-600">Calendar</Link>
       <Link to="/dashboard" className="text-sm text-gray-600 hover:text-indigo-600">Dashboard</Link>
       <Link to="/transactions" className="text-sm text-gray-600 hover:text-indigo-600">Transactions</Link>

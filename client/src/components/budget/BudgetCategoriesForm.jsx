@@ -4,28 +4,37 @@ const MONTH_NAMES = ['January','February','March','April','May','June','July','A
 
 const SUGGESTED = ['Rent/Mortgage', 'Groceries', 'Transportation', 'Utilities', 'Entertainment', 'Savings', 'Healthcare', 'Dining Out'];
 
+const DEFAULT_COLORS = [
+  '#6366f1', '#f59e0b', '#10b981', '#ef4444', '#3b82f6',
+  '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#84cc16',
+];
+
 function fmt(n) {
   return n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 }
 
 export default function BudgetCategoriesForm({ month, year, income, onSubmit, onBack, onCancel }) {
-  const [categories, setCategories] = useState([{ name: '', plannedAmount: '' }]);
+  const [categories, setCategories] = useState([{ name: '', plannedAmount: '', color: DEFAULT_COLORS[0] }]);
   const [error, setError] = useState('');
 
   const totalPlanned = categories.reduce((sum, c) => sum + (Number(c.plannedAmount) || 0), 0);
   const remaining = income.monthlyIncome - totalPlanned;
 
-  const addCategory = () => setCategories((prev) => [...prev, { name: '', plannedAmount: '' }]);
+  const addCategory = () =>
+    setCategories((prev) => [...prev, { name: '', plannedAmount: '', color: DEFAULT_COLORS[prev.length % DEFAULT_COLORS.length] }]);
+
   const removeCategory = (i) => setCategories((prev) => prev.filter((_, idx) => idx !== i));
+
   const updateCategory = (i, field, value) =>
     setCategories((prev) => prev.map((cat, idx) => (idx === i ? { ...cat, [field]: value } : cat)));
 
   function addSuggested(name) {
     if (categories.some((c) => c.name.toLowerCase() === name.toLowerCase())) return;
     setCategories((prev) => {
+      const nextColor = DEFAULT_COLORS[prev.length % DEFAULT_COLORS.length];
       const hasEmpty = prev.find((c) => !c.name.trim());
-      if (hasEmpty) return prev.map((c) => (!c.name.trim() ? { name, plannedAmount: c.plannedAmount } : c));
-      return [...prev, { name, plannedAmount: '' }];
+      if (hasEmpty) return prev.map((c) => (!c.name.trim() ? { ...c, name } : c));
+      return [...prev, { name, plannedAmount: '', color: nextColor }];
     });
   }
 
@@ -36,7 +45,7 @@ export default function BudgetCategoriesForm({ month, year, income, onSubmit, on
       if (!cat.name.trim()) return setError('All category names are required.');
       if (Number(cat.plannedAmount) <= 0) return setError('All planned amounts must be positive.');
     }
-    await onSubmit(categories.map((c) => ({ name: c.name.trim(), plannedAmount: Number(c.plannedAmount) })));
+    await onSubmit(categories.map((c) => ({ name: c.name.trim(), plannedAmount: Number(c.plannedAmount), color: c.color })));
   }
 
   const inputCls = 'border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500';
@@ -109,6 +118,13 @@ export default function BudgetCategoriesForm({ month, year, income, onSubmit, on
             <p className="text-xs font-medium text-gray-500 mb-2">Categories</p>
             {categories.map((cat, i) => (
               <div key={i} className="flex gap-2 mb-2 items-center">
+                <input
+                  type="color"
+                  value={cat.color}
+                  onChange={(e) => updateCategory(i, 'color', e.target.value)}
+                  className="w-9 h-9 rounded-lg border border-gray-200 cursor-pointer p-0.5 flex-shrink-0"
+                  title="Pick category color"
+                />
                 <input
                   placeholder="Category name"
                   value={cat.name}

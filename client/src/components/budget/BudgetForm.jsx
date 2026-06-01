@@ -2,15 +2,26 @@ import { useState } from 'react';
 
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
+const DEFAULT_COLORS = [
+  '#6366f1', '#f59e0b', '#10b981', '#ef4444', '#3b82f6',
+  '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#84cc16',
+];
+
 export default function BudgetForm({ initialData, onSubmit, onCancel }) {
   const [name, setName] = useState(initialData?.name ?? '');
   const [month, setMonth] = useState(initialData?.month ?? new Date().getMonth() + 1);
   const [year, setYear] = useState(initialData?.year ?? new Date().getFullYear());
-  const [categories, setCategories] = useState(initialData?.categories ?? [{ name: '', plannedAmount: '' }]);
+  const [categories, setCategories] = useState(
+    initialData?.categories?.map((c, i) => ({ ...c, color: c.color ?? DEFAULT_COLORS[i % DEFAULT_COLORS.length] }))
+      ?? [{ name: '', plannedAmount: '', color: DEFAULT_COLORS[0] }]
+  );
   const [error, setError] = useState('');
 
-  const addCategory = () => setCategories((prev) => [...prev, { name: '', plannedAmount: '' }]);
+  const addCategory = () =>
+    setCategories((prev) => [...prev, { name: '', plannedAmount: '', color: DEFAULT_COLORS[prev.length % DEFAULT_COLORS.length] }]);
+
   const removeCategory = (i) => setCategories((prev) => prev.filter((_, idx) => idx !== i));
+
   const updateCategory = (i, field, value) =>
     setCategories((prev) => prev.map((cat, idx) => (idx === i ? { ...cat, [field]: value } : cat)));
 
@@ -26,7 +37,7 @@ export default function BudgetForm({ initialData, onSubmit, onCancel }) {
       name,
       month: Number(month),
       year: Number(year),
-      categories: categories.map((c) => ({ name: c.name, plannedAmount: Number(c.plannedAmount) })),
+      categories: categories.map((c) => ({ name: c.name, plannedAmount: Number(c.plannedAmount), color: c.color })),
     });
   };
 
@@ -47,7 +58,14 @@ export default function BudgetForm({ initialData, onSubmit, onCancel }) {
 
       <p className="text-sm font-medium text-gray-700 mb-2">Categories</p>
       {categories.map((cat, i) => (
-        <div key={i} className="flex gap-2 mb-2">
+        <div key={i} className="flex gap-2 mb-2 items-center">
+          <input
+            type="color"
+            value={cat.color}
+            onChange={(e) => updateCategory(i, 'color', e.target.value)}
+            className="w-9 h-9 rounded-lg border border-gray-200 cursor-pointer p-0.5 flex-shrink-0"
+            title="Pick category color"
+          />
           <input placeholder="Name" value={cat.name} onChange={(e) => updateCategory(i, 'name', e.target.value)}
             className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1" />
           <input type="number" placeholder="Amount" value={cat.plannedAmount} min={0}

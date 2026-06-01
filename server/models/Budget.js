@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 const categorySchema = new mongoose.Schema({
   name: { type: String, required: true, lowercase: true },
   plannedAmount: { type: Number, required: true, min: 0 },
+  color: { type: String, default: '#6366f1' },
 });
 
 const incomeSchema = new mongoose.Schema({

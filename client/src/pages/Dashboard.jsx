@@ -3,10 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar.jsx';
 import BudgetCard from '../components/budget/BudgetCard.jsx';
 import CategoryRow from '../components/budget/CategoryRow.jsx';
+import PieChart from '../components/budget/PieChart.jsx';
 import { useBudget } from '../context/BudgetContext.jsx';
 import { getBudgetSummary } from '../services/transactionService.js';
 
+const DEFAULT_COLORS = [
+  '#6366f1', '#f59e0b', '#10b981', '#ef4444', '#3b82f6',
+  '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#84cc16',
+];
+
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const fmt = (n) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 
 export default function Dashboard() {
   const { budgets, activeBudget, setActiveBudget, summary, setSummary, fetchBudgets, deleteBudget } = useBudget();
@@ -18,6 +25,17 @@ export default function Dashboard() {
     if (!activeBudget) return;
     getBudgetSummary(activeBudget._id).then(setSummary);
   }, [activeBudget]);
+
+  const summaryWithColors = summary.map((row) => {
+    const cat = activeBudget?.categories.find((c) => c.name.toLowerCase() === row.category.toLowerCase());
+    const i = activeBudget?.categories.indexOf(cat) ?? 0;
+    return { ...row, color: cat?.color ?? DEFAULT_COLORS[i % DEFAULT_COLORS.length] };
+  });
+
+  const totalSpent = summaryWithColors.reduce((s, r) => s + r.totalSpent, 0);
+  const spentSlices = summaryWithColors
+    .filter((r) => r.totalSpent > 0)
+    .map((r) => ({ value: r.totalSpent, color: r.color, label: r.category }));
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -63,8 +81,20 @@ export default function Dashboard() {
 
             {activeBudget && summary.length > 0 && (
               <div className="bg-white border border-gray-200 rounded-2xl p-6">
-                <h2 className="text-base font-semibold text-gray-800 mb-4">Category Breakdown</h2>
-                {summary.map((row) => <CategoryRow key={row.category} {...row} />)}
+                <h2 className="text-base font-semibold text-gray-800 mb-5">Category Breakdown</h2>
+                <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
+                  <div className="flex-shrink-0 flex flex-col items-center gap-1">
+                    <PieChart slices={spentSlices} size={180} holeRatio={0.5} />
+                    {totalSpent > 0 ? (
+                      <p className="text-sm font-semibold text-gray-700">{fmt(totalSpent)} spent</p>
+                    ) : (
+                      <p className="text-xs text-gray-400">No spending yet</p>
+                    )}
+                  </div>
+                  <div className="flex-1 w-full">
+                    {summaryWithColors.map((row) => <CategoryRow key={row.category} {...row} />)}
+                  </div>
+                </div>
               </div>
             )}
           </>

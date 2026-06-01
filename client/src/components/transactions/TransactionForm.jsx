@@ -8,6 +8,14 @@ export default function TransactionForm({ initialData, budgets, onSubmit, onCanc
   const [description, setDescription] = useState(initialData?.description ?? '');
   const [type, setType] = useState(initialData?.type ?? 'expense');
 
+  const selectedBudget = budgets.find((b) => b._id === budgetId);
+  const categoryOptions = selectedBudget?.categories ?? [];
+
+  const handleBudgetChange = (e) => {
+    setBudgetId(e.target.value);
+    setCategory('');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     await onSubmit({ budgetId, category, amount: Number(amount), date, description, type });
@@ -17,12 +25,17 @@ export default function TransactionForm({ initialData, budgets, onSubmit, onCanc
 
   return (
     <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl p-6 my-4 flex flex-col gap-3">
-      <select value={budgetId} onChange={(e) => setBudgetId(e.target.value)} required className={inputCls}>
+      <select value={budgetId} onChange={handleBudgetChange} required className={inputCls}>
         <option value="">Select budget…</option>
         {budgets.map((b) => <option key={b._id} value={b._id}>{b.name}</option>)}
       </select>
       <div className="flex gap-3">
-        <input placeholder="Category" value={category} onChange={(e) => setCategory(e.target.value)} required className={inputCls} />
+        <select value={category} onChange={(e) => setCategory(e.target.value)} required disabled={!budgetId} className={inputCls}>
+          <option value="">{budgetId ? 'Select category…' : 'Select a budget first'}</option>
+          {categoryOptions.map((c) => (
+            <option key={c.name} value={c.name}>{c.name.charAt(0).toUpperCase() + c.name.slice(1)}</option>
+          ))}
+        </select>
         <input type="number" placeholder="Amount" value={amount} onChange={(e) => setAmount(e.target.value)} min={0} step="0.01" required className={inputCls} />
       </div>
       <div className="flex gap-3">

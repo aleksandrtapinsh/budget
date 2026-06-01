@@ -1,12 +1,22 @@
+import PieChart from './PieChart.jsx';
+
+const DEFAULT_COLORS = [
+  '#6366f1', '#f59e0b', '#10b981', '#ef4444', '#3b82f6',
+  '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#84cc16',
+];
+
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const fmt = (n) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 
 export default function BudgetCard({ budget, summary, onSelect, onDelete }) {
-  const totalPlanned = summary.reduce((sum, cat) => sum + cat.plannedAmount, 0);
+  const totalPlanned = budget.categories.reduce((sum, cat) => sum + cat.plannedAmount, 0);
   const totalSpent = summary.reduce((sum, cat) => sum + cat.totalSpent, 0);
-  const overallPercent = totalPlanned > 0 ? (totalSpent / totalPlanned) * 100 : 0;
-  const clamped = Math.min(overallPercent, 100);
-  const barColor = overallPercent >= 100 ? 'bg-red-500' : overallPercent >= 75 ? 'bg-yellow-500' : 'bg-green-500';
+
+  const slices = budget.categories.map((cat, i) => ({
+    value: cat.plannedAmount,
+    color: cat.color ?? DEFAULT_COLORS[i % DEFAULT_COLORS.length],
+    label: cat.name,
+  }));
 
   return (
     <div
@@ -26,8 +36,8 @@ export default function BudgetCard({ budget, summary, onSelect, onDelete }) {
           ×
         </button>
       </div>
-      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden mb-2">
-        <div className={`h-full rounded-full ${barColor}`} style={{ width: `${clamped}%` }} />
+      <div className="flex justify-center mb-2">
+        <PieChart slices={slices} size={64} holeRatio={0.38} />
       </div>
       <div className="flex justify-between text-xs text-gray-400">
         <span>{fmt(totalSpent)} spent</span>
