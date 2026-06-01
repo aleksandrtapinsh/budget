@@ -93,9 +93,15 @@ export default function Dashboard() {
                   <div className="flex-shrink-0 flex flex-col items-center gap-1">
                     <PieChart slices={pieSlices} total={monthlyIncome} size={180} holeRatio={0.5} />
                     {totalSpent > 0 ? (
-                      <p className="text-sm font-semibold text-gray-300">{fmt(totalSpent)} spent</p>
+                      <>
+                        <p className="text-sm font-semibold text-gray-300">{fmt(totalSpent)} spent</p>
+                        <p className="text-xs text-gray-500">of {fmt(totalPlanned)} planned</p>
+                      </>
                     ) : (
-                      <p className="text-xs text-gray-500">No spending yet</p>
+                      <>
+                        <p className="text-xs text-gray-500">No spending yet</p>
+                        {totalPlanned > 0 && <p className="text-xs text-gray-600">{fmt(totalPlanned)} planned</p>}
+                      </>
                     )}
                   </div>
                   <div className="flex-1 w-full">
