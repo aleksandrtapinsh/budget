@@ -95,16 +95,13 @@ export default function Dashboard() {
                     {totalSpent > 0 ? (
                       <>
                         <p className="text-sm font-semibold text-gray-300">{fmt(totalSpent)} spent</p>
-                        <p className="text-xs text-gray-500">of {fmt(totalPlanned)} planned</p>
+                        <p className="text-xs text-gray-500">of {fmt(totalPlanned + unallocated)} planned</p>
                       </>
                     ) : (
                       <>
                         <p className="text-xs text-gray-500">No spending yet</p>
-                        {totalPlanned > 0 && <p className="text-xs text-gray-600">{fmt(totalPlanned)} planned</p>}
+                        {totalPlanned > 0 && <p className="text-xs text-gray-600">{fmt(totalPlanned + unallocated)} planned</p>}
                       </>
-                    )}
-                    {unallocated > 0 && (
-                      <p className="text-xs text-gray-600">{fmt(unallocated)} unallocated</p>
                     )}
                   </div>
                   <div className="flex-1 w-full">
