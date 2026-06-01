@@ -33,6 +33,10 @@ export default function Dashboard() {
   });
 
   const totalSpent = summaryWithColors.reduce((s, r) => s + r.totalSpent, 0);
+  const monthlyIncome = activeBudget?.income?.monthlyIncome ?? 0;
+  const totalPlanned = summaryWithColors.reduce((s, r) => s + r.plannedAmount, 0);
+  const unallocated = Math.max(0, monthlyIncome - totalPlanned);
+
   const pieSlices = summaryWithColors.map((r) => ({
     label: r.category,
     plannedValue: r.plannedAmount,
@@ -87,7 +91,7 @@ export default function Dashboard() {
                 <h2 className="text-base font-semibold text-gray-800 mb-5">Category Breakdown</h2>
                 <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
                   <div className="flex-shrink-0 flex flex-col items-center gap-1">
-                    <PieChart slices={pieSlices} total={activeBudget?.income?.monthlyIncome} size={180} holeRatio={0.5} />
+                    <PieChart slices={pieSlices} total={monthlyIncome} size={180} holeRatio={0.5} />
                     {totalSpent > 0 ? (
                       <p className="text-sm font-semibold text-gray-700">{fmt(totalSpent)} spent</p>
                     ) : (
@@ -96,6 +100,17 @@ export default function Dashboard() {
                   </div>
                   <div className="flex-1 w-full">
                     {summaryWithColors.map((row) => <CategoryRow key={row.category} {...row} />)}
+                    {unallocated > 0 && (
+                      <div className="flex items-center gap-3 py-2.5 border-t border-gray-100 mt-1">
+                        <div className="w-3 h-3 rounded-full flex-shrink-0 bg-gray-300" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-400">Unallocated</p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-sm font-medium text-gray-400">{fmt(unallocated)}</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
