@@ -103,6 +103,9 @@ export default function Dashboard() {
                         {totalPlanned > 0 && <p className="text-xs text-gray-600">{fmt(totalPlanned)} planned</p>}
                       </>
                     )}
+                    {unallocated > 0 && (
+                      <p className="text-xs text-gray-600">{fmt(unallocated)} unallocated</p>
+                    )}
                   </div>
                   <div className="flex-1 w-full">
                     {summaryWithColors.map((row) => <CategoryRow key={row.category} {...row} />)}
