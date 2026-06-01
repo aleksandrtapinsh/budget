@@ -21,10 +21,10 @@ export default function TransactionForm({ initialData, budgets, onSubmit, onCanc
     await onSubmit({ budgetId, category, amount: Number(amount), date, description, type });
   };
 
-  const inputCls = 'border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full';
+  const inputCls = 'bg-gray-700 border border-gray-600 text-gray-100 placeholder:text-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 w-full';
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl p-6 my-4 flex flex-col gap-3">
+    <form onSubmit={handleSubmit} className="bg-gray-800 border border-gray-700 rounded-2xl p-6 my-4 flex flex-col gap-3">
       <select value={budgetId} onChange={handleBudgetChange} required className={inputCls}>
         <option value="">Select budget…</option>
         {budgets.map((b) => <option key={b._id} value={b._id}>{b.name}</option>)}
@@ -44,17 +44,17 @@ export default function TransactionForm({ initialData, budgets, onSubmit, onCanc
       </div>
       <div className="flex gap-4">
         {['expense', 'income'].map((t) => (
-          <label key={t} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-            <input type="radio" value={t} checked={type === t} onChange={() => setType(t)} className="accent-indigo-600" />
+          <label key={t} className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+            <input type="radio" value={t} checked={type === t} onChange={() => setType(t)} className="accent-emerald-500" />
             <span className="capitalize">{t}</span>
           </label>
         ))}
       </div>
       <div className="flex gap-2">
-        <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+        <button type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
           {initialData ? 'Save' : 'Add Transaction'}
         </button>
-        <button type="button" onClick={onCancel} className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm">
+        <button type="button" onClick={onCancel} className="bg-gray-700 hover:bg-gray-600 text-gray-300 px-4 py-2 rounded-lg text-sm">
           Cancel
         </button>
       </div>

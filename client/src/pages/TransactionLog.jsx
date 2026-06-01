@@ -41,14 +41,14 @@ export default function TransactionLog() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       <Navbar />
       <main className="max-w-3xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Transactions</h1>
+          <h1 className="text-2xl font-bold text-gray-100">Transactions</h1>
           <button
             onClick={() => { setEditing(null); setShowForm(true); }}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
           >
             + Add Transaction
           </button>
@@ -65,7 +65,7 @@ export default function TransactionLog() {
 
         <TransactionFilter filters={filters} budgets={budgets} onChange={setFilters} />
 
-        <div className="bg-white border border-gray-200 rounded-2xl px-5">
+        <div className="bg-gray-800 border border-gray-700 rounded-2xl px-5">
           <TransactionList
             transactions={transactions}
             onEdit={(tx) => { setEditing(tx); setShowForm(true); }}

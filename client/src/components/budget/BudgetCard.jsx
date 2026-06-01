@@ -1,8 +1,8 @@
 import PieChart from './PieChart.jsx';
 
 const DEFAULT_COLORS = [
-  '#6366f1', '#f59e0b', '#10b981', '#ef4444', '#3b82f6',
-  '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#84cc16',
+  '#10b981', '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6',
+  '#ec4899', '#14b8a6', '#f97316', '#84cc16', '#6366f1',
 ];
 
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -25,16 +25,16 @@ export default function BudgetCard({ budget, summary, onSelect, onDelete }) {
   return (
     <div
       onClick={onSelect}
-      className="bg-white border border-gray-200 rounded-xl p-4 cursor-pointer hover:border-indigo-400 hover:shadow-sm transition w-56"
+      className="bg-gray-800 border border-gray-700 rounded-xl p-4 cursor-pointer hover:border-emerald-600 hover:shadow-sm transition w-56"
     >
       <div className="flex justify-between items-start mb-3">
         <div>
-          <p className="text-xs text-gray-400">{MONTH_NAMES[budget.month - 1]} {budget.year}</p>
-          <p className="text-sm font-semibold text-gray-800 mt-0.5">{budget.name}</p>
+          <p className="text-xs text-gray-500">{MONTH_NAMES[budget.month - 1]} {budget.year}</p>
+          <p className="text-sm font-semibold text-gray-100 mt-0.5">{budget.name}</p>
         </div>
         <button
           onClick={(e) => { e.stopPropagation(); onDelete(); }}
-          className="text-gray-300 hover:text-red-400 text-lg leading-none"
+          className="text-gray-600 hover:text-red-400 text-lg leading-none"
           aria-label="Delete budget"
         >
           ×
@@ -43,7 +43,7 @@ export default function BudgetCard({ budget, summary, onSelect, onDelete }) {
       <div className="flex justify-center mb-2">
         <PieChart slices={slices} total={budget.income?.monthlyIncome} size={64} holeRatio={0.38} />
       </div>
-      <div className="flex justify-between text-xs text-gray-400">
+      <div className="flex justify-between text-xs text-gray-500">
         <span>{fmt(totalSpent)} spent</span>
         <span>of {fmt(totalPlanned)}</span>
       </div>

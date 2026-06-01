@@ -3,8 +3,8 @@ import { useState } from 'react';
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 const DEFAULT_COLORS = [
-  '#6366f1', '#f59e0b', '#10b981', '#ef4444', '#3b82f6',
-  '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#84cc16',
+  '#10b981', '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6',
+  '#ec4899', '#14b8a6', '#f97316', '#84cc16', '#6366f1',
 ];
 
 export default function BudgetForm({ initialData, onSubmit, onCancel }) {
@@ -41,48 +41,45 @@ export default function BudgetForm({ initialData, onSubmit, onCancel }) {
     });
   };
 
-  const inputCls = 'border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full';
+  const inputCls = 'bg-gray-700 border border-gray-600 text-gray-100 placeholder:text-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 w-full';
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl p-6 my-4">
-      {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2 mb-4">{error}</p>}
+    <form onSubmit={handleSubmit} className="bg-gray-800 border border-gray-700 rounded-2xl p-6 my-4">
+      {error && <p className="text-sm text-red-400 bg-red-900/30 border border-red-800 rounded-lg px-3 py-2 mb-4">{error}</p>}
 
       <div className="flex gap-3 mb-4">
         <input placeholder="Budget name" value={name} onChange={(e) => setName(e.target.value)} required className={inputCls + ' flex-1'} />
-        <select value={month} onChange={(e) => setMonth(e.target.value)} className="border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <select value={month} onChange={(e) => setMonth(e.target.value)}
+          className="bg-gray-700 border border-gray-600 text-gray-100 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
           {MONTH_NAMES.map((m, i) => <option key={i + 1} value={i + 1}>{m}</option>)}
         </select>
         <input type="number" value={year} onChange={(e) => setYear(e.target.value)} min={2000} max={2100}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-24" />
+          className="bg-gray-700 border border-gray-600 text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 w-24" />
       </div>
 
-      <p className="text-sm font-medium text-gray-700 mb-2">Categories</p>
+      <p className="text-sm font-medium text-gray-300 mb-2">Categories</p>
       {categories.map((cat, i) => (
         <div key={i} className="flex gap-2 mb-2 items-center">
-          <input
-            type="color"
-            value={cat.color}
-            onChange={(e) => updateCategory(i, 'color', e.target.value)}
-            className="w-9 h-9 rounded-lg border border-gray-200 cursor-pointer p-0.5 flex-shrink-0"
-            title="Pick category color"
-          />
+          <input type="color" value={cat.color} onChange={(e) => updateCategory(i, 'color', e.target.value)}
+            className="w-9 h-9 rounded-lg border border-gray-600 cursor-pointer p-0.5 flex-shrink-0 bg-gray-700"
+            title="Pick category color" />
           <input placeholder="Name" value={cat.name} onChange={(e) => updateCategory(i, 'name', e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1" />
+            className="bg-gray-700 border border-gray-600 text-gray-100 placeholder:text-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 flex-1" />
           <input type="number" placeholder="Amount" value={cat.plannedAmount} min={0}
             onChange={(e) => updateCategory(i, 'plannedAmount', e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-28" />
+            className="bg-gray-700 border border-gray-600 text-gray-100 placeholder:text-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 w-28" />
           <button type="button" onClick={() => removeCategory(i)}
-            className="text-gray-300 hover:text-red-400 text-xl px-1">×</button>
+            className="text-gray-600 hover:text-red-400 text-xl px-1">×</button>
         </div>
       ))}
       <button type="button" onClick={addCategory}
-        className="text-sm text-indigo-600 hover:text-indigo-700 mb-4">+ Add category</button>
+        className="text-sm text-emerald-500 hover:text-emerald-400 mb-4">+ Add category</button>
 
       <div className="flex gap-2 mt-2">
-        <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+        <button type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
           {initialData ? 'Save Changes' : 'Create Budget'}
         </button>
-        <button type="button" onClick={onCancel} className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm">
+        <button type="button" onClick={onCancel} className="bg-gray-700 hover:bg-gray-600 text-gray-300 px-4 py-2 rounded-lg text-sm">
           Cancel
         </button>
       </div>

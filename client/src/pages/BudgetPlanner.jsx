@@ -21,14 +21,14 @@ export default function BudgetPlanner() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       <Navbar />
       <main className="max-w-2xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Budget Planner</h1>
+          <h1 className="text-2xl font-bold text-gray-100">Budget Planner</h1>
           <button
             onClick={() => { setEditing(null); setShowForm(true); }}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
           >
             + New Budget
           </button>
@@ -43,20 +43,20 @@ export default function BudgetPlanner() {
         )}
 
         {budgets.length === 0 && !showForm ? (
-          <div className="bg-white border border-dashed border-gray-300 rounded-2xl p-12 text-center">
-            <p className="text-gray-400">No budgets yet. Create one above.</p>
+          <div className="bg-gray-800 border border-dashed border-gray-600 rounded-2xl p-12 text-center">
+            <p className="text-gray-500">No budgets yet. Create one above.</p>
           </div>
         ) : (
-          <ul className="bg-white border border-gray-200 rounded-2xl divide-y divide-gray-100">
+          <ul className="bg-gray-800 border border-gray-700 rounded-2xl divide-y divide-gray-700">
             {budgets.map((budget) => (
               <li key={budget._id} className="flex justify-between items-center px-5 py-3">
                 <div>
-                  <p className="text-sm font-medium text-gray-800">{budget.name}</p>
-                  <p className="text-xs text-gray-400">{MONTH_NAMES[budget.month - 1]} {budget.year}</p>
+                  <p className="text-sm font-medium text-gray-200">{budget.name}</p>
+                  <p className="text-xs text-gray-500">{MONTH_NAMES[budget.month - 1]} {budget.year}</p>
                 </div>
                 <button
                   onClick={() => { setEditing(budget); setShowForm(true); }}
-                  className="text-sm text-indigo-600 hover:text-indigo-700"
+                  className="text-sm text-emerald-500 hover:text-emerald-400"
                 >
                   Edit
                 </button>

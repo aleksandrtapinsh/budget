@@ -8,8 +8,8 @@ import { useBudget } from '../context/BudgetContext.jsx';
 import { getBudgetSummary } from '../services/transactionService.js';
 
 const DEFAULT_COLORS = [
-  '#6366f1', '#f59e0b', '#10b981', '#ef4444', '#3b82f6',
-  '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#84cc16',
+  '#10b981', '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6',
+  '#ec4899', '#14b8a6', '#f97316', '#84cc16', '#6366f1',
 ];
 
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -45,30 +45,30 @@ export default function Dashboard() {
   }));
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       <Navbar />
       <main className="max-w-3xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+            <h1 className="text-2xl font-bold text-gray-100">Dashboard</h1>
             {activeBudget && (
               <p className="text-sm text-gray-500 mt-0.5">{MONTH_NAMES[activeBudget.month - 1]} {activeBudget.year}</p>
             )}
           </div>
           <div className="flex gap-2">
-            <button onClick={() => navigate('/calendar')} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+            <button onClick={() => navigate('/calendar')} className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
               + New Budget
             </button>
-            <button onClick={() => navigate('/transactions')} className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm">
+            <button onClick={() => navigate('/transactions')} className="bg-gray-700 border border-gray-600 hover:bg-gray-600 text-gray-300 px-4 py-2 rounded-lg text-sm">
               + Transaction
             </button>
           </div>
         </div>
 
         {budgets.length === 0 ? (
-          <div className="bg-white border border-dashed border-gray-300 rounded-2xl p-12 text-center">
-            <p className="text-gray-400 mb-4">No budgets yet</p>
-            <button onClick={() => navigate('/calendar')} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+          <div className="bg-gray-800 border border-dashed border-gray-600 rounded-2xl p-12 text-center">
+            <p className="text-gray-500 mb-4">No budgets yet</p>
+            <button onClick={() => navigate('/calendar')} className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
               Create your first budget
             </button>
           </div>
@@ -87,27 +87,27 @@ export default function Dashboard() {
             </div>
 
             {activeBudget && summary.length > 0 && (
-              <div className="bg-white border border-gray-200 rounded-2xl p-6">
-                <h2 className="text-base font-semibold text-gray-800 mb-5">Category Breakdown</h2>
+              <div className="bg-gray-800 border border-gray-700 rounded-2xl p-6">
+                <h2 className="text-base font-semibold text-gray-200 mb-5">Category Breakdown</h2>
                 <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
                   <div className="flex-shrink-0 flex flex-col items-center gap-1">
                     <PieChart slices={pieSlices} total={monthlyIncome} size={180} holeRatio={0.5} />
                     {totalSpent > 0 ? (
-                      <p className="text-sm font-semibold text-gray-700">{fmt(totalSpent)} spent</p>
+                      <p className="text-sm font-semibold text-gray-300">{fmt(totalSpent)} spent</p>
                     ) : (
-                      <p className="text-xs text-gray-400">No spending yet</p>
+                      <p className="text-xs text-gray-500">No spending yet</p>
                     )}
                   </div>
                   <div className="flex-1 w-full">
                     {summaryWithColors.map((row) => <CategoryRow key={row.category} {...row} />)}
                     {unallocated > 0 && (
-                      <div className="flex items-center gap-3 py-2.5 border-t border-gray-100 mt-1">
-                        <div className="w-3 h-3 rounded-full flex-shrink-0 bg-gray-300" />
+                      <div className="flex items-center gap-3 py-2.5 border-t border-gray-700 mt-1">
+                        <div className="w-3 h-3 rounded-full flex-shrink-0 bg-gray-600" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-400">Unallocated</p>
+                          <p className="text-sm font-medium text-gray-500">Unallocated</p>
                         </div>
                         <div className="text-right flex-shrink-0">
-                          <p className="text-sm font-medium text-gray-400">{fmt(unallocated)}</p>
+                          <p className="text-sm font-medium text-gray-500">{fmt(unallocated)}</p>
                         </div>
                       </div>
                     )}

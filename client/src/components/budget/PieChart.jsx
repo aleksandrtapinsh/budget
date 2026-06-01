@@ -1,3 +1,7 @@
+// card background — donut hole and slice separators match the dark card surface
+const CARD_BG = '#1f2937';   // gray-800
+const UNALLOC  = '#374151';  // gray-700
+
 function piePath(cx, cy, r, startAngle, endAngle) {
   const sx = cx + r * Math.cos(startAngle), sy = cy + r * Math.sin(startAngle);
   const ex = cx + r * Math.cos(endAngle),   ey = cy + r * Math.sin(endAngle);
@@ -24,9 +28,9 @@ function ringPath(cx, cy, rOuter, rInner, startAngle, endAngle) {
 export default function PieChart({ slices, total, size = 160, holeRatio = 0.5 }) {
   const cx = size / 2, cy = size / 2;
   const rOuter  = size / 2 - 1;
-  const rWidth  = Math.round(size * 0.038);   // skinny outer ring
+  const rWidth  = Math.round(size * 0.038);
   const rInner  = rOuter - rWidth;
-  const gap     = Math.round(size * 0.018);   // gap between ring and pie
+  const gap     = Math.round(size * 0.018);
   const r       = rInner - gap;
   const holeR   = r * holeRatio;
 
@@ -35,10 +39,10 @@ export default function PieChart({ slices, total, size = 160, holeRatio = 0.5 })
   if (denom === 0) {
     return (
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        <circle cx={cx} cy={cy} r={rOuter} fill="#e5e7eb" />
-        <circle cx={cx} cy={cy} r={rInner} fill="white" />
-        <circle cx={cx} cy={cy} r={r} fill="#e5e7eb" />
-        <circle cx={cx} cy={cy} r={holeR} fill="white" />
+        <circle cx={cx} cy={cy} r={rOuter} fill={UNALLOC} />
+        <circle cx={cx} cy={cy} r={rInner} fill={CARD_BG} />
+        <circle cx={cx} cy={cy} r={r} fill={UNALLOC} />
+        <circle cx={cx} cy={cy} r={holeR} fill={CARD_BG} />
       </svg>
     );
   }
@@ -54,43 +58,37 @@ export default function PieChart({ slices, total, size = 160, holeRatio = 0.5 })
     const end   = angle + sweep;
     angle = end;
 
-    // Gray background slice — shows the planned structure
     bgSlices.push(
       <path key={`bg-${i}`}
         d={piePath(cx, cy, r, start, end)}
-        fill="#e5e7eb" stroke="white" strokeWidth="1.5" />
+        fill={UNALLOC} stroke={CARD_BG} strokeWidth="1.5" />
     );
 
-    // Colored fill — grows as money is spent
     if (slice.spentValue > 0) {
       const spentSweep = (Math.min(slice.spentValue, slice.plannedValue) / denom) * 2 * Math.PI;
       fgSlices.push(
         <path key={`fg-${i}`}
           d={piePath(cx, cy, r, start, start + spentSweep)}
-          fill={slice.color} stroke="white" strokeWidth="1.5" />
+          fill={slice.color} stroke={CARD_BG} strokeWidth="1.5" />
       );
     }
 
-    // Outer ring segment in the category color
     ringSegs.push(
       <path key={`ring-${i}`}
         d={ringPath(cx, cy, rOuter, rInner, start, end)}
-        fill={slice.color} stroke="white" strokeWidth="1" />
+        fill={slice.color} stroke={CARD_BG} strokeWidth="1" />
     );
   });
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-      {/* Outer ring: gray base (unallocated stays gray), colored segments on top */}
-      <circle cx={cx} cy={cy} r={rOuter} fill="#e5e7eb" />
-      <circle cx={cx} cy={cy} r={rInner} fill="white" />
+      <circle cx={cx} cy={cy} r={rOuter} fill={UNALLOC} />
+      <circle cx={cx} cy={cy} r={rInner} fill={CARD_BG} />
       {ringSegs}
-
-      {/* Inner pie: full gray base, category bg slices with separators, spent fills */}
-      <circle cx={cx} cy={cy} r={r} fill="#e5e7eb" />
+      <circle cx={cx} cy={cy} r={r} fill={UNALLOC} />
       {bgSlices}
       {fgSlices}
-      <circle cx={cx} cy={cy} r={holeR} fill="white" />
+      <circle cx={cx} cy={cy} r={holeR} fill={CARD_BG} />
     </svg>
   );
 }

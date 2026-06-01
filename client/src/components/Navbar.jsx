@@ -11,16 +11,16 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-6">
-      <Link to="/calendar" className="font-bold text-lg text-indigo-600 mr-auto hover:text-indigo-500 transition-colors">Bad Budget</Link>
-      <Link to="/dashboard" className="text-sm text-gray-600 hover:text-indigo-600">Dashboard</Link>
-      <Link to="/transactions" className="text-sm text-gray-600 hover:text-indigo-600">Transactions</Link>
+    <nav className="bg-gray-900 border-b border-gray-700 px-6 py-3 flex items-center gap-6">
+      <Link to="/calendar" className="font-bold text-lg text-emerald-500 mr-auto hover:text-emerald-400 transition-colors">Bad Budget</Link>
+      <Link to="/dashboard" className="text-sm text-gray-400 hover:text-emerald-400">Dashboard</Link>
+      <Link to="/transactions" className="text-sm text-gray-400 hover:text-emerald-400">Transactions</Link>
       {user && (
         <>
           <span className="text-sm text-gray-500">{user.name}</span>
           <button
             onClick={handleLogout}
-            className="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-md"
+            className="text-sm bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1.5 rounded-md"
           >
             Logout
           </button>

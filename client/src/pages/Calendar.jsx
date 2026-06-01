@@ -11,8 +11,8 @@ const MONTH_NAMES = ['January','February','March','April','May','June','July','A
 const MONTH_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 const DEFAULT_COLORS = [
-  '#6366f1','#f59e0b','#10b981','#ef4444','#3b82f6',
-  '#8b5cf6','#ec4899','#14b8a6','#f97316','#84cc16',
+  '#10b981', '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6',
+  '#ec4899', '#14b8a6', '#f97316', '#84cc16', '#6366f1',
 ];
 
 function fmt(n) {
@@ -61,10 +61,7 @@ export default function Calendar() {
 
   function handleMonthClick(month) {
     const existing = budgetByMonth[month];
-    if (existing) {
-      navigate('/dashboard');
-      return;
-    }
+    if (existing) { navigate('/dashboard'); return; }
     setWizardTarget({ month, year });
     setIncomeData(null);
     setShowCategories(false);
@@ -92,26 +89,22 @@ export default function Calendar() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       <Navbar />
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Budget Calendar</h1>
-            <p className="text-sm text-gray-400 mt-0.5">Click a month to create or view its budget</p>
+            <h1 className="text-2xl font-bold text-gray-100">Budget Calendar</h1>
+            <p className="text-sm text-gray-500 mt-0.5">Click a month to create or view its budget</p>
           </div>
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => setYear((y) => y - 1)}
-              className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 bg-white hover:bg-gray-50 text-gray-500"
-            >
+            <button onClick={() => setYear((y) => y - 1)}
+              className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-700 bg-gray-800 hover:bg-gray-700 text-gray-400">
               ‹
             </button>
-            <span className="text-xl font-bold text-gray-800 w-16 text-center">{year}</span>
-            <button
-              onClick={() => setYear((y) => y + 1)}
-              className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 bg-white hover:bg-gray-50 text-gray-500"
-            >
+            <span className="text-xl font-bold text-gray-200 w-16 text-center">{year}</span>
+            <button onClick={() => setYear((y) => y + 1)}
+              className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-700 bg-gray-800 hover:bg-gray-700 text-gray-400">
               ›
             </button>
           </div>
@@ -131,20 +124,20 @@ export default function Calendar() {
                 className={`
                   relative rounded-2xl p-4 text-left transition-all border group
                   ${hasBudget
-                    ? 'bg-white border-indigo-200 hover:border-indigo-400 hover:shadow-sm'
+                    ? 'bg-gray-800 border-emerald-800 hover:border-emerald-600 hover:shadow-sm'
                     : isToday
-                      ? 'bg-white border-indigo-300 ring-2 ring-indigo-200 hover:border-indigo-400'
-                      : 'bg-white border-gray-200 hover:border-indigo-300 hover:shadow-sm'}
+                      ? 'bg-gray-800 border-emerald-700 ring-2 ring-emerald-900 hover:border-emerald-600'
+                      : 'bg-gray-800 border-gray-700 hover:border-emerald-700 hover:shadow-sm'}
                 `}
               >
                 {isToday && !hasBudget && (
-                  <span className="absolute top-2 right-3 w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                  <span className="absolute top-2 right-3 w-1.5 h-1.5 rounded-full bg-emerald-500" />
                 )}
 
-                <p className={`text-xs font-semibold uppercase tracking-widest mb-0.5 ${hasBudget ? 'text-indigo-400' : 'text-gray-400'}`}>
+                <p className={`text-xs font-semibold uppercase tracking-widest mb-0.5 ${hasBudget ? 'text-emerald-500' : 'text-gray-600'}`}>
                   {MONTH_SHORT[i]}
                 </p>
-                <p className={`text-sm font-bold ${hasBudget ? 'text-gray-800' : 'text-gray-700'}`}>
+                <p className={`text-sm font-bold ${hasBudget ? 'text-gray-100' : 'text-gray-400'}`}>
                   {name}
                 </p>
 
@@ -159,20 +152,20 @@ export default function Calendar() {
                       />
                     </div>
                     {budget.income?.monthlyIncome && (
-                      <p className="text-xs text-indigo-500 font-semibold text-center">
+                      <p className="text-xs text-emerald-500 font-semibold text-center">
                         {fmt(budget.income.monthlyIncome)}/mo
                       </p>
                     )}
                     <button
                       onClick={(e) => { e.stopPropagation(); deleteBudget(budget._id).then(fetchBudgets); }}
-                      className="absolute top-2 right-2 w-5 h-5 rounded-full bg-gray-100 hover:bg-red-100 text-gray-400 hover:text-red-400 text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-2 right-2 w-5 h-5 rounded-full bg-gray-700 hover:bg-red-900 text-gray-500 hover:text-red-400 text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                       title="Delete budget"
                     >
                       ×
                     </button>
                   </>
                 ) : (
-                  <p className={`text-xs mt-1 ${isToday ? 'text-indigo-400' : 'text-gray-300'}`}>+ Add budget</p>
+                  <p className={`text-xs mt-1 ${isToday ? 'text-emerald-600' : 'text-gray-600'}`}>+ Add budget</p>
                 )}
               </button>
             );
@@ -180,19 +173,16 @@ export default function Calendar() {
         </div>
 
         {Object.keys(budgetByMonth).length > 0 && (
-          <div className="mt-8 bg-white border border-gray-200 rounded-2xl p-5">
-            <p className="text-sm font-semibold text-gray-700 mb-3">{year} Overview</p>
+          <div className="mt-8 bg-gray-800 border border-gray-700 rounded-2xl p-5">
+            <p className="text-sm font-semibold text-gray-300 mb-3">{year} Overview</p>
             <div className="flex flex-wrap gap-3">
               {Object.values(budgetByMonth).map((b) => (
-                <div key={b._id} className="flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl px-3 py-2">
-                  <span className="text-xs font-medium text-gray-700">{MONTH_SHORT[b.month - 1]}</span>
+                <div key={b._id} className="flex items-center gap-2 bg-gray-700 border border-gray-600 rounded-xl px-3 py-2">
+                  <span className="text-xs font-medium text-gray-300">{MONTH_SHORT[b.month - 1]}</span>
                   {b.income?.monthlyIncome && (
-                    <span className="text-xs text-indigo-600 font-semibold">{fmt(b.income.monthlyIncome)}</span>
+                    <span className="text-xs text-emerald-400 font-semibold">{fmt(b.income.monthlyIncome)}</span>
                   )}
-                  <button
-                    onClick={() => navigate('/dashboard')}
-                    className="text-xs text-gray-400 hover:text-indigo-600"
-                  >
+                  <button onClick={() => navigate('/dashboard')} className="text-xs text-gray-500 hover:text-emerald-400">
                     View →
                   </button>
                 </div>
