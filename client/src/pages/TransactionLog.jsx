@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar.jsx';
 import TransactionList from '../components/transactions/TransactionList.jsx';
 import TransactionForm from '../components/transactions/TransactionForm.jsx';
 import TransactionFilter from '../components/transactions/TransactionFilter.jsx';
+import CsvImportModal from '../components/transactions/CsvImportModal.jsx';
 import { useBudget } from '../context/BudgetContext.jsx';
 import {
   getTransactions,
@@ -17,6 +18,7 @@ export default function TransactionLog() {
   const [filters, setFilters] = useState({});
   const [editing, setEditing] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [showImport, setShowImport] = useState(false);
 
   useEffect(() => { fetchBudgets(); }, []);
   useEffect(() => { getTransactions(filters).then(setTransactions); }, [filters]);
@@ -40,18 +42,31 @@ export default function TransactionLog() {
     setTransactions((prev) => prev.filter((tx) => tx._id !== id));
   };
 
+  const handleCsvImport = async (rows) => {
+    const created = await Promise.all(rows.map(r => createTransaction(r)));
+    setTransactions((prev) => [...created.reverse(), ...prev]);
+  };
+
   return (
     <div className="min-h-screen bg-gray-900">
       <Navbar />
       <main className="max-w-3xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-100">Transactions</h1>
-          <button
-            onClick={() => { setEditing(null); setShowForm(true); }}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
-          >
-            + Add Transaction
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowImport(true)}
+              className="bg-gray-700 hover:bg-gray-600 border border-gray-600 text-gray-300 px-4 py-2 rounded-lg text-sm font-medium"
+            >
+              Import CSV
+            </button>
+            <button
+              onClick={() => { setEditing(null); setShowForm(true); }}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+            >
+              + Add Transaction
+            </button>
+          </div>
         </div>
 
         {showForm && (
@@ -73,6 +88,14 @@ export default function TransactionLog() {
           />
         </div>
       </main>
+
+      {showImport && (
+        <CsvImportModal
+          budgets={budgets}
+          onClose={() => setShowImport(false)}
+          onImport={handleCsvImport}
+        />
+      )}
     </div>
   );
 }
